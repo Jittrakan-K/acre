@@ -7,7 +7,15 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "**/*.bat",
+      "**/*.cmd",
+      "**/*.exe",
+      "**/*.zip",
+      "**/*.backup",
+      "index.before-redesign.html",
+      "_UPLOAD-TO-GITHUB/**",
+      "README.md"
     ],
     "rewrites": [
       {
