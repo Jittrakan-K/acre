@@ -149,3 +149,21 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
   setTimeout(watch, 1500);
 })();
+
+/* ACRE — quiet toasts: only warnings and errors pop up; routine "saved / synced / uploaded" messages stay hidden */
+(function () {
+  'use strict';
+  var IMPORTANT = /⚠|❌|🚫|⛔|error|fail|denied|ผิดพลาด|ไม่สำเร็จ|ไม่ได้|ไม่พบ|ล้มเหลว|ปฏิเสธ|เฉพาะผู้ดูแล|ถูกระงับ|หมดอายุ|offline|ออฟไลน์/i;
+  function patch() {
+    var orig = window.showToast;
+    if (typeof orig !== 'function' || orig.__acreQuiet) return;
+    var quiet = function (message) {
+      if (IMPORTANT.test(String(message == null ? '' : message))) return orig.apply(this, arguments);
+    };
+    quiet.__acreQuiet = true;
+    window.showToast = quiet;
+  }
+  patch();
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', patch);
+  setTimeout(patch, 1500);
+})();
