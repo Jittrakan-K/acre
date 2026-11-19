@@ -10960,6 +10960,25 @@ html body :is(.at-req-in, #acreFloor){ align-items: flex-start !important; gap: 
 html body :is(.at-req-tx, #acreFloor){ gap: 0 !important; padding-top: 0 !important; }
 html body :is(.at-req-tx > b, .at-req-tx > small, .at-req-tx > .at-req-code, #acreFloor){ display: block !important; line-height: 13.44px !important; margin: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; text-box: none !important; }
 html body :is(.at-req-tx > .at-req-code, #acreFloor){ background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--acre-ink-2) !important; height: auto !important; }
+html body .at-table:not(.af-table) th:nth-child(7){ width: 120.96px !important; }
+html body :is(th.at-files, td.at-files, #acreFloor){ text-align: right !important; padding-right: 10.08px !important; white-space: nowrap !important; }
+html body :is(td.at-files .at-file, #acreFloor){ display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 3.36px !important;
+  height: 20.16px !important; line-height: 20.16px !important; padding: 0 6.72px !important; margin: 0 0 0 3.36px !important; vertical-align: top !important; box-sizing: border-box !important;
+  border: 1px solid var(--acre-line) !important; border-radius: 5.04px !important; background: var(--acre-surface) !important; color: var(--acre-ink-2) !important; text-box: none !important; }
+html body :is(td.at-files .at-file:not(.is-folder), #acreFloor){ width: 47.04px !important; }
+html body :is(td.at-files .at-file.is-folder, #acreFloor){ width: 48.72px !important; }
+html body :is(td.at-files .at-file:not(.is-folder):last-child, #acreFloor){ margin-right: 52.08px !important; }
+html body :is(td.at-files .at-dim, #acreFloor){ display: inline-block !important; width: 48.72px !important; text-align: center !important; line-height: 20.16px !important; color: var(--acre-ink-3) !important; }
+html body :is(td.at-files .at-file svg, #acreFloor){ flex: none; width: 10.08px !important; height: 10.08px !important; }
+html body :is(.at-quote, .at-code, .badge-code, .badge-quotation, #acreFloor){
+  display: inline-flex !important; align-items: center !important; box-sizing: border-box !important; height: 20.16px !important; line-height: 1 !important;
+  padding: 1px 6.72px 0 !important; text-box: none !important; vertical-align: middle !important; }
+html body :is(.at-st-top .at-quote, #acreFloor){ height: 21.84px !important; }
+html body :is(td.at-files, #acreFloor){ padding-top: 10.92px !important; }
+html body :is(.at-code, .badge-code, .badge-quotation, #acreFloor){ display: inline-block !important; height: 20.16px !important; line-height: 19.32px !important; padding: 1px 6.72px 0 !important;
+  max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+html body :is(td.at-files, #acreFloor){ font-size: 0 !important; }
+html body :is(td.at-files .at-file, td.at-files .at-dim, #acreFloor){ font-size: 10.08px !important; }
 .at-wrap{ background: #fff; border-radius: 12.6px; box-shadow: 0 2.94px 4.62px rgba(0,0,0,.02); overflow: hidden; }
 .at-bar-top{ display: flex; align-items: center; justify-content: space-between; gap: 10.08px; padding: 11.76px 15.12px; border-bottom: 1px solid #EDF2F7; flex-wrap: wrap; }
 .at-summary{ display: flex; align-items: center; gap: 6.72px; font-size: 10.08px; font-weight: 700; color: #64748B; letter-spacing: .03em; flex-wrap: wrap; }
@@ -12162,4 +12181,23 @@ html body :is(.at-req-in, #acreFloor){ align-items: flex-start !important; gap: 
 html body :is(.at-req-tx, #acreFloor){ gap: 0 !important; padding-top: 0 !important; }
 html body :is(.at-req-tx > b, .at-req-tx > small, .at-req-tx > .at-req-code, #acreFloor){ display: block !important; line-height: 13.44px !important; margin: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; text-box: none !important; }
 html body :is(.at-req-tx > .at-req-code, #acreFloor){ background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--acre-ink-2) !important; height: auto !important; }
+html body .at-table:not(.af-table) th:nth-child(7){ width: 120.96px !important; }
+html body :is(th.at-files, td.at-files, #acreFloor){ text-align: right !important; padding-right: 10.08px !important; white-space: nowrap !important; }
+html body :is(td.at-files .at-file, #acreFloor){ display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 3.36px !important;
+  height: 20.16px !important; line-height: 20.16px !important; padding: 0 6.72px !important; margin: 0 0 0 3.36px !important; vertical-align: top !important; box-sizing: border-box !important;
+  border: 1px solid var(--acre-line) !important; border-radius: 5.04px !important; background: var(--acre-surface) !important; color: var(--acre-ink-2) !important; text-box: none !important; }
+html body :is(td.at-files .at-file:not(.is-folder), #acreFloor){ width: 47.04px !important; }
+html body :is(td.at-files .at-file.is-folder, #acreFloor){ width: 48.72px !important; }
+html body :is(td.at-files .at-file:not(.is-folder):last-child, #acreFloor){ margin-right: 52.08px !important; }
+html body :is(td.at-files .at-dim, #acreFloor){ display: inline-block !important; width: 48.72px !important; text-align: center !important; line-height: 20.16px !important; color: var(--acre-ink-3) !important; }
+html body :is(td.at-files .at-file svg, #acreFloor){ flex: none; width: 10.08px !important; height: 10.08px !important; }
+html body :is(.at-quote, .at-code, .badge-code, .badge-quotation, #acreFloor){
+  display: inline-flex !important; align-items: center !important; box-sizing: border-box !important; height: 20.16px !important; line-height: 1 !important;
+  padding: 1px 6.72px 0 !important; text-box: none !important; vertical-align: middle !important; }
+html body :is(.at-st-top .at-quote, #acreFloor){ height: 21.84px !important; }
+html body :is(td.at-files, #acreFloor){ padding-top: 10.92px !important; }
+html body :is(.at-code, .badge-code, .badge-quotation, #acreFloor){ display: inline-block !important; height: 20.16px !important; line-height: 19.32px !important; padding: 1px 6.72px 0 !important;
+  max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+html body :is(td.at-files, #acreFloor){ font-size: 0 !important; }
+html body :is(td.at-files .at-file, td.at-files .at-dim, #acreFloor){ font-size: 10.08px !important; }
 }

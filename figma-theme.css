@@ -2764,3 +2764,26 @@ html body :is(.at-req-in, #acreFloor) { align-items: flex-start !important; gap:
 html body :is(.at-req-tx, #acreFloor) { gap: 0 !important; padding-top: 0 !important; }
 html body :is(.at-req-tx > b, .at-req-tx > small, .at-req-tx > .at-req-code, #acreFloor) { display: block !important; line-height: 16px !important; margin: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; text-box: none !important; }
 html body :is(.at-req-tx > .at-req-code, #acreFloor) { background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--acre-ink-2) !important; height: auto !important; }
+
+/* files cell (v75): two fixed slots, PDF then folder, set flush right so every folder chip sits in one column */
+html body .at-table:not(.af-table) th:nth-child(7) { width: 144px !important; }
+html body :is(th.at-files, td.at-files, #acreFloor) { text-align: right !important; padding-right: 12px !important; white-space: nowrap !important; }
+html body :is(td.at-files .at-file, #acreFloor) { display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 4px !important;
+  height: 24px !important; line-height: 24px !important; padding: 0 8px !important; margin: 0 0 0 4px !important; vertical-align: top !important; box-sizing: border-box !important;
+  border: 1px solid var(--acre-line) !important; border-radius: 6px !important; background: var(--acre-surface) !important; color: var(--acre-ink-2) !important; text-box: none !important; }
+html body :is(td.at-files .at-file:not(.is-folder), #acreFloor) { width: 56px !important; }
+html body :is(td.at-files .at-file.is-folder, #acreFloor) { width: 58px !important; }
+html body :is(td.at-files .at-file:not(.is-folder):last-child, #acreFloor) { margin-right: 62px !important; }
+html body :is(td.at-files .at-dim, #acreFloor) { display: inline-block !important; width: 58px !important; text-align: center !important; line-height: 24px !important; color: var(--acre-ink-3) !important; }
+html body :is(td.at-files .at-file svg, #acreFloor) { flex: none; width: 12px !important; height: 12px !important; }
+
+/* mono chips: the number sits on the optical centre of its box */
+html body :is(.at-quote, .at-code, .badge-code, .badge-quotation, #acreFloor) {
+  display: inline-flex !important; align-items: center !important; box-sizing: border-box !important; height: 24px !important; line-height: 1 !important;
+  padding: 1px 8px 0 !important; text-box: none !important; vertical-align: middle !important; }
+html body :is(.at-st-top .at-quote, #acreFloor) { height: 26px !important; }
+html body :is(td.at-files, #acreFloor) { padding-top: 13px !important; }
+html body :is(.at-code, .badge-code, .badge-quotation, #acreFloor) { display: inline-block !important; height: 24px !important; line-height: 23px !important; padding: 1px 8px 0 !important;
+  max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+html body :is(td.at-files, #acreFloor) { font-size: 0 !important; }
+html body :is(td.at-files .at-file, td.at-files .at-dim, #acreFloor) { font-size: 12px !important; }
