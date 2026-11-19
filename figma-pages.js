@@ -178,3 +178,20 @@
   function start() { run(); new MutationObserver(queue).observe(document.body, { childList: true, subtree: true }); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
+
+/* ACRE — theme swatches: the logo's ink replaces the indigo preset */
+(function () {
+  'use strict';
+  function swap() {
+    try {
+      if (typeof WORKSPACE_THEME_PRESETS === 'undefined') return false;
+      var i = WORKSPACE_THEME_PRESETS.findIndex(function (p) { return p.color.toLowerCase() === '#4f46e5'; });
+      if (i === -1) return true;
+      WORKSPACE_THEME_PRESETS.splice(i, 1);
+      WORKSPACE_THEME_PRESETS.unshift({ color: '#111827', label: 'ACRE INK' });
+      if (typeof renderWorkspaceSwitcher === 'function') renderWorkspaceSwitcher();
+      return true;
+    } catch (e) { return true; }
+  }
+  if (!swap()) setTimeout(swap, 800);
+})();

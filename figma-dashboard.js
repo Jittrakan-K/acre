@@ -1377,6 +1377,136 @@ html body :is(.pu-av + .pu-av, #acreFloor) { margin-left: 3px !important; }
 }
 /* contrast: secondary text at AA on white and on the page grey */
 html body :is([id^="btnHeader"]:not(.active) > span, #headerBrandSubtitle, .ws-theme-quick-label, #mobileHeaderSub span, .workspace-tab-btn:not(.active) .workspace-tab-count, .desktop-nav-link:not(.active) span, .mobile-tab-item:not(.active) .mobile-tab-label, #murataHeroDesc, .mobile-filter-pill:not(.active) .pill-badge, .pu-line-x span, .pu-line-axis span, .mobile-filter-pill:not(.active), #acreFloor) { color: #64748B !important; }
+
+/* =====================================================================
+   ACRE INK — Hallmark redesign (restyle, app scope), v72
+   One material: ink on paper, like the mark. Hairlines instead of shadows,
+   one radius per level, colour only where it means something:
+   the workspace accent for the action and the selection, red for pending.
+   ===================================================================== */
+:root {
+  --acre-ink: #111827;
+  --acre-ink-2: #374151;
+  --acre-ink-3: #6B7280;
+  --acre-line: #E5E7EB;
+  --acre-line-soft: #EEF0F2;
+  --acre-paper: #F6F7F8;
+  --acre-surface: #FEFEFD;
+  --acre-wait: #B42318;
+  --acre-wait-bg: #FEF3F2;
+  --acre-wait-line: #FDDCD8;
+  --acre-done-bg: #ECEEF1;
+  --acre-r-box: 10px;
+  --acre-r-ctl: 7px;
+  --acre-accent: var(--primary, #111827);
+}
+
+/* paper and surfaces */
+html, html body { overflow-x: clip !important; }
+html body, html body .app-container, html body .main-content, html body .app-main { background: var(--acre-paper) !important; }
+html body :is(.pu-card, .controls-bar, .at-wrap, .murata-hero-card, .ios-task-card, .mobile-search-pill-box, .analytics-section .chart-card, .eng-support-card, .ranking-card, #acreFloor) {
+  box-shadow: none !important; border: 1px solid var(--acre-line) !important; border-radius: var(--acre-r-box) !important; background-color: var(--acre-surface) !important;
+}
+html body :is(.workspace-switcher-section, #acreFloor) { box-shadow: none !important; }
+html body :is(.desktop-nav-link, .view-tab, .view-tab.active, .btn, .btn-murata-red, .btn-murata-outline, .mobile-header-circle-btn, .mobile-dime-fab, .workspace-tab-btn, .mobile-ws-chip, .mobile-filter-pill, .pu-stat, #acreFloor) { box-shadow: none !important; }
+
+/* sidebar: plain words, the current page in ink on a soft plate */
+html body :is(.desktop-nav-link, #acreFloor) { background: transparent !important; border-radius: var(--acre-r-ctl) !important; color: var(--acre-ink-3) !important; }
+html body :is(.desktop-nav-link > :first-child, #acreFloor) { background: transparent !important; box-shadow: none !important; border: 0 !important; color: inherit !important; }
+html body :is(.desktop-nav-link > :first-child svg, #acreFloor) { color: inherit !important; stroke: currentColor !important; }
+html body :is(.desktop-nav-link.active, #acreFloor) { background: var(--acre-surface) !important; color: var(--acre-ink) !important; outline: 1px solid var(--acre-line); outline-offset: -1px; }
+html body :is(.desktop-nav-link.active > :first-child, #acreFloor) { background: transparent !important; color: var(--acre-ink) !important; }
+html body :is(.desktop-nav-link.active span, #acreFloor) { color: var(--acre-ink) !important; }
+
+/* headings and body text in ink */
+html body :is(.murata-hero-title, .pu-title, .pu-head h2, .at-title, .atl-title, .card-title, .ios-card-title, .chart-title, #mobileHeaderTitle, .mobile-header-title, #acreFloor) { color: var(--acre-ink) !important; }
+html body :is(#mobileHeaderTitle span, .mobile-header-title span, #acreFloor) { color: var(--acre-ink) !important; }
+
+/* actions: one primary in the workspace accent, everything else a hairline button */
+html body :is(.btn-murata-red, .btn-hero-cta, .btn-primary, .btn-primary-add-circle, .mobile-dime-fab, #acreFloor) {
+  background: var(--acre-accent) !important; border: 1px solid var(--acre-accent) !important; color: var(--acre-surface) !important; border-radius: var(--acre-r-ctl) !important; box-shadow: none !important;
+}
+html body :is(.mobile-dime-fab, #acreFloor) { border-radius: 14px !important; }
+html body :is(.btn-murata-outline, .btn-secondary, .btn-tools-dropdown, .mobile-header-circle-btn:not(.btn-primary-add-circle), .load-more-btn, #acreFloor) {
+  background: var(--acre-surface) !important; border: 1px solid var(--acre-line) !important; color: var(--acre-ink) !important; border-radius: var(--acre-r-ctl) !important; box-shadow: none !important;
+}
+
+/* tabs and chips: the selection in ink, counts quiet */
+html body :is(.view-tab.active, #acreFloor) { background: var(--acre-surface) !important; color: var(--acre-ink) !important; outline: 1px solid var(--acre-line); outline-offset: -1px; }
+html body :is(.workspace-tab-btn.active, .mobile-ws-chip.active, #acreFloor) { background: var(--acre-surface) !important; color: var(--acre-ink) !important; border: 1px solid var(--acre-ink) !important; }
+html body :is(.workspace-tab-btn.active .workspace-tab-count, .mobile-ws-chip.active .mobile-ws-chip-count, #acreFloor) { background: var(--acre-ink) !important; color: var(--acre-surface) !important; }
+html body :is(.workspace-tab-btn.active .workspace-tab-name, #acreFloor) { color: var(--acre-ink) !important; }
+html body :is(.mobile-filter-pill.active, #acreFloor) { background: var(--acre-ink) !important; border-color: var(--acre-ink) !important; color: var(--acre-surface) !important; }
+html body :is(.mobile-filter-pill.active .pill-badge, #acreFloor) { color: var(--acre-surface) !important; }
+html body :is(.mobile-filter-pill:not(.active), .mobile-ws-chip:not(.active), .workspace-tab-btn:not(.active), #acreFloor) { background: var(--acre-surface) !important; border: 1px solid var(--acre-line) !important; }
+
+/* status: pending is the one red, in progress is ink, done steps back */
+html body :is(.status-pill, .at-pill, #acreFloor) { border-radius: 5px !important; box-shadow: none !important; font-weight: 600 !important; }
+html body :is(.status-pill.status-wait, .status-pill.status-pending, .at-pill.is-wait, #acreFloor) { background: var(--acre-wait-bg) !important; color: var(--acre-wait) !important; border: 1px solid var(--acre-wait-line) !important; }
+html body :is(.status-pill.status-in_progress, .at-pill.is-in_progress, #acreFloor) { background: var(--acre-surface) !important; color: var(--acre-ink) !important; border: 1px solid var(--acre-ink) !important; }
+html body :is(.status-pill.status-done, .at-pill.is-done, #acreFloor) { background: var(--acre-line-soft) !important; color: var(--acre-ink-2) !important; border: 1px solid transparent !important; }
+html body :is(.status-pill.status-cancelled, .status-pill.status-cancel, .at-pill.is-cancel, #acreFloor) { background: transparent !important; color: var(--acre-ink-3) !important; border: 1px dashed var(--acre-line) !important; }
+
+/* categories: words, not coloured boxes */
+html body :is(.category-badge, .ios-card-cat-badge, #acreFloor) { background: var(--acre-line-soft) !important; color: var(--acre-ink-2) !important; border: 1px solid transparent !important; border-radius: 5px !important; }
+html body :is(.category-badge *, .ios-card-cat-badge *, #acreFloor) { color: inherit !important; }
+
+/* rows: pending a pale red, done grey */
+html body :is(.at-row.is-wait, tr.is-wait, #acreFloor) { background: var(--acre-wait-bg) !important; }
+html body :is(.ios-task-card.card-status-wait, .ios-task-card.card-status-pending, #acreFloor) { border-color: var(--acre-wait-line) !important; }
+
+/* bars: track a hairline, fill ink; pending fills red */
+html body :is(.pu-comp-bar, .at-bar, .eng-flat-track, .telemetry-progress-track, #acreFloor) { background: var(--acre-line-soft) !important; }
+html body :is(.eng-flat-fill, .telemetry-progress-fill, #acreFloor) { background-color: var(--acre-accent) !important; }
+
+/* stat tiles: figure and label, no green trend colour */
+html body :is(.pu-stat-meta em.up, .pu-stat-meta em.down, .pu-sub b.up, .pu-sub b.down, b.up, b.down, #acreFloor) { color: var(--acre-ink) !important; }
+html body :is(.pu-stat-value, .pu-comp-num, #acreFloor) { color: var(--acre-ink) !important; }
+
+/* code chips: ink on soft grey, the stamped-number look */
+html body :is(.badge-code, .at-code, .at-req-code, #acreFloor) { background: var(--acre-line-soft) !important; color: var(--acre-ink) !important; border: 0 !important; }
+html body :is(.badge-quotation, .at-quote, #acreFloor) { background: var(--acre-surface) !important; color: var(--acre-ink-2) !important; border: 1px solid var(--acre-line) !important; }
+
+/* inputs */
+html body :is(input[type=text], input[type=search], input[type=date], input[type=number], select, textarea, .search-input, #acreFloor) { border-color: var(--acre-line) !important; box-shadow: none !important; border-radius: var(--acre-r-ctl) !important; }
+html body :is(.mobile-search-pill-box, #acreFloor) { border-radius: var(--acre-r-ctl) !important; }
+
+/* motion is state only */
+html body :is(*, #acreFloor) { transition-property: color, background-color, border-color, outline-color, opacity, transform !important; }
+
+/* table at the 11px floor: room for the date and owner, no tracking inside cells */
+html body .at-table:not(.af-table) th:nth-child(6) { width: 150px !important; }
+html body .at-table:not(.af-table) th:nth-child(7) { width: 92px !important; }
+html body .at-table:not(.af-table) th:nth-child(8) { width: 116px !important; }
+html body .at-table td, html body .at-table td * { letter-spacing: 0 !important; }
+html body .at-st-top { flex-wrap: nowrap !important; min-width: 0; }
+html body .at-st-top .at-quote { flex: none; max-width: none !important; overflow: visible !important; text-overflow: clip !important; }
+html body .at-pill { flex: none; }
+html body .at-req-code, html body .at-code { display: inline-block !important; width: auto !important; max-width: 100%; padding: 0 4px !important; border-radius: 4px !important; }
+
+/* completion: done in ink, in progress a mid grey, pending the one red, cancelled a hairline */
+html body :is(.pu-seg-done, #acreFloor) { background: var(--acre-ink) !important; }
+html body :is(.pu-seg-in_progress, #acreFloor) { background: var(--acre-ink-3) !important; }
+html body :is(.pu-seg-wait, #acreFloor) { background: var(--acre-wait) !important; }
+html body :is(.pu-seg-cancel, #acreFloor) { background: var(--acre-line) !important; }
+html body :is(.pu-rc-ico, #acreFloor) { background: var(--acre-line-soft) !important; color: var(--acre-ink) !important; }
+html body :is(.pu-rc-ico svg, #acreFloor) { color: var(--acre-ink) !important; }
+/* icons in ink, never a yellow folder or a key emoji */
+html body :is(.badge-folder:not(.badge-dl), #acreFloor)::before { background: var(--acre-ink-3) !important; }
+html body :is(.at-file svg, .is-folder svg, #acreFloor) { color: var(--acre-ink-3) !important; }
+html body :is(#mobileAuthIcon, #acreFloor) { display: none !important; }
+html body :is(#mobileAuthBtn:not(.fx-has-photo), #acreFloor)::before {
+  content: ''; width: 18px; height: 18px; background: var(--acre-ink);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='11' width='16' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center / contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='11' width='16' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+html body :is(.card-location-tags, #acreFloor) { flex-wrap: wrap !important; overflow: visible !important; }
+html body :is(.pill-inprog .pill-dot, #acreFloor) { background: var(--acre-ink) !important; }
+html body :is(.pill-wait .pill-dot, #acreFloor) { background: var(--acre-wait) !important; }
+html body :is(.pill-done .pill-dot, #acreFloor) { background: var(--acre-ink-3) !important; }
+html body :is(.mobile-filter-pill.active .pill-dot, #acreFloor) { background: var(--acre-surface) !important; }
+html body :is(.at-req-code, #acreFloor) { display: inline-block !important; align-self: flex-start !important; width: auto !important; max-width: 100% !important; padding: 0 4px !important; border-radius: 4px !important; }
+html body :is(.pu-head p, #acreFloor) { color: #5B6472 !important; }
 `;
     var sc = document.getElementById('fxScaleCss'); if (sc) document.head.insertBefore(st, sc); else document.head.appendChild(st);
   }
