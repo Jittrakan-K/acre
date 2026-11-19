@@ -157,3 +157,24 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', patch);
   setTimeout(patch, 1500);
 })();
+
+/* ACRE — one date style everywhere: card dates written 2026-10-16 read as 16 OCT 2026, like the table and timeline */
+(function () {
+  'use strict';
+  var MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  var ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
+  var queued = false;
+  function run() {
+    queued = false;
+    document.querySelectorAll('.data-val').forEach(function (el) {
+      if (el.children.length) return;
+      var m = ISO.exec(el.textContent.trim()); if (!m) return;
+      var mo = +m[2]; if (mo < 1 || mo > 12) return;
+      el.setAttribute('title', m[0]);
+      el.textContent = (+m[3]) + ' ' + MON[mo - 1] + ' ' + m[1];
+    });
+  }
+  function queue() { if (!queued) { queued = true; requestAnimationFrame(run); } }
+  function start() { run(); new MutationObserver(queue).observe(document.body, { childList: true, subtree: true }); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
