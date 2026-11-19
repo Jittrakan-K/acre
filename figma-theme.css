@@ -2750,3 +2750,17 @@ html body :is(.at-row.is-in_progress .at-bar > span, #acreFloor) { background: v
 html body :is(.at-summary b.up, .at-sum-ach b, .at-ach b, #acreFloor) { color: var(--acre-ink) !important; }
 html body :is(.af-score em, #acreFloor) { color: var(--acre-ink) !important; }
 html body .af-table th:nth-child(9) { width: 200px !important; }
+
+/* status + requester cells (v74): one left edge per column, one rhythm per block
+   status: chip row, then label and bar as one group;  requester: name, department, code on even lines */
+html body :is(.at-st-top, #acreFloor) { gap: 6px !important; align-items: center !important; }
+html body :is(.at-st-top .at-pill, .at-st-top .at-quote, #acreFloor) { height: 26px !important; line-height: 26px !important; padding-top: 0 !important; padding-bottom: 0 !important; margin: 0 !important;
+  display: inline-flex !important; align-items: center !important; box-sizing: border-box !important; text-box: none !important; border-radius: 5px !important; }
+html body :is(.at-st-top .at-quote, #acreFloor) { padding-left: 8px !important; padding-right: 8px !important; }
+html body :is(.at-st-meta, #acreFloor) { margin-top: 12px !important; margin-bottom: 0 !important; height: auto !important; line-height: 16px !important; text-box: none !important; }
+html body :is(.at-st-meta *, #acreFloor) { line-height: 16px !important; text-box: none !important; }
+html body :is(td.at-status .at-bar, #acreFloor) { margin-top: 6px !important; }
+html body :is(.at-req-in, #acreFloor) { align-items: flex-start !important; gap: 10px !important; }
+html body :is(.at-req-tx, #acreFloor) { gap: 0 !important; padding-top: 0 !important; }
+html body :is(.at-req-tx > b, .at-req-tx > small, .at-req-tx > .at-req-code, #acreFloor) { display: block !important; line-height: 16px !important; margin: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; text-box: none !important; }
+html body :is(.at-req-tx > .at-req-code, #acreFloor) { background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--acre-ink-2) !important; height: auto !important; }

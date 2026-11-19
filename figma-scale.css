@@ -10949,6 +10949,17 @@ html body :is(.at-row.is-in_progress .at-bar > span, #acreFloor){ background: va
 html body :is(.at-summary b.up, .at-sum-ach b, .at-ach b, #acreFloor){ color: var(--acre-ink) !important; }
 html body :is(.af-score em, #acreFloor){ color: var(--acre-ink) !important; }
 html body .af-table th:nth-child(9){ width: 168px !important; }
+html body :is(.at-st-top, #acreFloor){ gap: 5.04px !important; align-items: center !important; }
+html body :is(.at-st-top .at-pill, .at-st-top .at-quote, #acreFloor){ height: 21.84px !important; line-height: 21.84px !important; padding-top: 0 !important; padding-bottom: 0 !important; margin: 0 !important;
+  display: inline-flex !important; align-items: center !important; box-sizing: border-box !important; text-box: none !important; border-radius: 4.2px !important; }
+html body :is(.at-st-top .at-quote, #acreFloor){ padding-left: 6.72px !important; padding-right: 6.72px !important; }
+html body :is(.at-st-meta, #acreFloor){ margin-top: 10.08px !important; margin-bottom: 0 !important; height: auto !important; line-height: 13.44px !important; text-box: none !important; }
+html body :is(.at-st-meta *, #acreFloor){ line-height: 13.44px !important; text-box: none !important; }
+html body :is(td.at-status .at-bar, #acreFloor){ margin-top: 5.04px !important; }
+html body :is(.at-req-in, #acreFloor){ align-items: flex-start !important; gap: 8.4px !important; }
+html body :is(.at-req-tx, #acreFloor){ gap: 0 !important; padding-top: 0 !important; }
+html body :is(.at-req-tx > b, .at-req-tx > small, .at-req-tx > .at-req-code, #acreFloor){ display: block !important; line-height: 13.44px !important; margin: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; text-box: none !important; }
+html body :is(.at-req-tx > .at-req-code, #acreFloor){ background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--acre-ink-2) !important; height: auto !important; }
 .at-wrap{ background: #fff; border-radius: 12.6px; box-shadow: 0 2.94px 4.62px rgba(0,0,0,.02); overflow: hidden; }
 .at-bar-top{ display: flex; align-items: center; justify-content: space-between; gap: 10.08px; padding: 11.76px 15.12px; border-bottom: 1px solid #EDF2F7; flex-wrap: wrap; }
 .at-summary{ display: flex; align-items: center; gap: 6.72px; font-size: 10.08px; font-weight: 700; color: #64748B; letter-spacing: .03em; flex-wrap: wrap; }
@@ -12140,4 +12151,15 @@ html body :is(.at-row.is-in_progress .at-bar > span, #acreFloor){ background: va
 html body :is(.at-summary b.up, .at-sum-ach b, .at-ach b, #acreFloor){ color: var(--acre-ink) !important; }
 html body :is(.af-score em, #acreFloor){ color: var(--acre-ink) !important; }
 html body .af-table th:nth-child(9){ width: 168px !important; }
+html body :is(.at-st-top, #acreFloor){ gap: 5.04px !important; align-items: center !important; }
+html body :is(.at-st-top .at-pill, .at-st-top .at-quote, #acreFloor){ height: 21.84px !important; line-height: 21.84px !important; padding-top: 0 !important; padding-bottom: 0 !important; margin: 0 !important;
+  display: inline-flex !important; align-items: center !important; box-sizing: border-box !important; text-box: none !important; border-radius: 4.2px !important; }
+html body :is(.at-st-top .at-quote, #acreFloor){ padding-left: 6.72px !important; padding-right: 6.72px !important; }
+html body :is(.at-st-meta, #acreFloor){ margin-top: 10.08px !important; margin-bottom: 0 !important; height: auto !important; line-height: 13.44px !important; text-box: none !important; }
+html body :is(.at-st-meta *, #acreFloor){ line-height: 13.44px !important; text-box: none !important; }
+html body :is(td.at-status .at-bar, #acreFloor){ margin-top: 5.04px !important; }
+html body :is(.at-req-in, #acreFloor){ align-items: flex-start !important; gap: 8.4px !important; }
+html body :is(.at-req-tx, #acreFloor){ gap: 0 !important; padding-top: 0 !important; }
+html body :is(.at-req-tx > b, .at-req-tx > small, .at-req-tx > .at-req-code, #acreFloor){ display: block !important; line-height: 13.44px !important; margin: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; text-box: none !important; }
+html body :is(.at-req-tx > .at-req-code, #acreFloor){ background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--acre-ink-2) !important; height: auto !important; }
 }
