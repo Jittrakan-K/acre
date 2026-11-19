@@ -2712,3 +2712,41 @@ html body :is(.pill-done .pill-dot, #acreFloor) { background: var(--acre-ink-3) 
 html body :is(.mobile-filter-pill.active .pill-dot, #acreFloor) { background: var(--acre-surface) !important; }
 html body :is(.at-req-code, #acreFloor) { display: inline-block !important; align-self: flex-start !important; width: auto !important; max-width: 100% !important; padding: 0 4px !important; border-radius: 4px !important; }
 html body :is(.pu-head p, #acreFloor) { color: #5B6472 !important; }
+
+/* account menu (v73): opens beside the sidebar, level with the account button, never over the menu */
+html body #btnHeaderAuth { gap: 8px !important; }
+html body #headerAuthText { letter-spacing: 0 !important; gap: 6px; overflow: visible !important; }
+html body .auth-user-role-badge { flex: none; padding: 0 5px !important; letter-spacing: 0 !important; background: var(--acre-line-soft) !important; color: var(--acre-ink) !important; border-radius: 4px !important; }
+html body .auth-user-dropdown { top: auto !important; bottom: 0 !important; left: calc(100% + 16px) !important; right: auto !important; width: 272px !important; transform-origin: left bottom;
+  border: 1px solid var(--acre-line) !important; border-radius: var(--acre-r-box) !important; box-shadow: 0 8px 24px rgba(17, 24, 39, .08) !important; background: var(--acre-surface) !important; padding: 8px !important; }
+html body .fx-acct { background: var(--acre-paper) !important; border-radius: 8px !important; padding: 12px !important; }
+html body .fx-acct-av { background: var(--acre-ink) !important; color: var(--acre-surface) !important; border-radius: 8px !important; width: 36px !important; height: 36px !important; }
+html body .fx-acct-id b { color: var(--acre-ink) !important; font-weight: 600 !important; }
+html body .fx-acct-role, html body .fx-acct-role.is-admin { background: var(--acre-surface) !important; color: var(--acre-ink) !important; border: 1px solid var(--acre-line) !important; letter-spacing: 0 !important; }
+html body .fx-acct-meta { grid-template-columns: max-content minmax(0, 1fr) !important; column-gap: 16px !important; row-gap: 8px !important; border-top-color: var(--acre-line) !important; }
+html body .fx-acct-meta dt { white-space: nowrap !important; letter-spacing: 0 !important; font-weight: 500 !important; color: var(--acre-ink-3) !important; }
+html body .fx-acct-meta dd { color: var(--acre-ink) !important; font-weight: 600 !important; }
+html body .auth-dropdown-item { border-radius: 6px !important; letter-spacing: 0 !important; }
+html body .auth-dropdown-item.text-danger { margin-top: 4px !important; padding-top: 12px !important; border-top: 1px solid var(--acre-line-soft) !important; border-radius: 0 0 6px 6px !important; }
+html body .auth-dropdown-item .fx-acct-role, html body .auth-dropdown-item [class*=badge] { margin-left: auto !important; }
+html body :is(.auth-user-role-badge, .auth-user-role-badge.admin, #acreFloor) { background: var(--acre-line-soft) !important; color: var(--acre-ink) !important; border: 0 !important; }
+html body :is(#adminViewTeamPinsDropdownItem, #acreFloor)::after { background: var(--acre-line-soft) !important; color: var(--acre-ink) !important; letter-spacing: 0 !important; }
+html body :is(#btnHeaderAuth, #btnHeaderTools, #acreFloor) { color: var(--acre-ink-2) !important; }
+html body :is(#btnHeaderTools > :first-child, #btnHeaderAuth > :first-child, #acreFloor) { background: transparent !important; box-shadow: none !important; }
+html body :is(#btnHeaderTools, #acreFloor) { background: transparent !important; border: 0 !important; }
+html body :is(#btnHeaderAuth, #acreFloor)::before { background: var(--acre-ink-2) !important; }
+html body :is(#btnHeaderTools svg, #acreFloor) { color: var(--acre-ink-2) !important; stroke: currentColor !important; }
+
+/* table balance (v73): titles break where the words run out, dates never clipped, done steps back */
+html body :is(.at-title, .atl-title, #acreFloor) { text-wrap: wrap !important; }
+html body .af-table th:nth-child(8) { width: 176px !important; }
+
+html body .af-date { letter-spacing: 0 !important; }
+html body :is(.af-date.is-done, .at-row.is-done .af-date, #acreFloor) { color: var(--acre-ink) !important; }
+html body :is(.at-row.is-done .at-bar > span, .at-row.is-done .at-bar i, #acreFloor) { background: var(--acre-ink-3) !important; }
+html body :is(.at-row.is-done .at-bar, #acreFloor) { background: var(--acre-line) !important; }
+html body :is(.at-pill.is-done, #acreFloor) { background: var(--acre-surface) !important; border: 1px solid var(--acre-line) !important; color: var(--acre-ink-2) !important; }
+html body :is(.at-row.is-in_progress .at-bar > span, #acreFloor) { background: var(--acre-accent) !important; }
+html body :is(.at-summary b.up, .at-sum-ach b, .at-ach b, #acreFloor) { color: var(--acre-ink) !important; }
+html body :is(.af-score em, #acreFloor) { color: var(--acre-ink) !important; }
+html body .af-table th:nth-child(9) { width: 200px !important; }
