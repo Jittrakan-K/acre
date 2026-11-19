@@ -73,43 +73,33 @@
   else setTimeout(init, 60);
 })();
 
-/* ACRE — browser tab: title "ACRE" and a favicon in the workspace theme colour */
+/* ACRE — brand mark: a geometric "A", an outer peak with a smaller peak rising inside it */
 (function () {
   'use strict';
-  var last = '';
-  function acreMark(c, size) {
-    var cx = 32, cy = 32, r = 19, n = 10, gap = 15, done = 8, segs = '';
-    for (var i = 0; i < n; i++) {
-      var a0 = (-90 + i * 36 + gap / 2) * Math.PI / 180, a1 = (-90 + (i + 1) * 36 - gap / 2) * Math.PI / 180;
-      var x0 = (cx + r * Math.cos(a0)).toFixed(2), y0 = (cy + r * Math.sin(a0)).toFixed(2), x1 = (cx + r * Math.cos(a1)).toFixed(2), y1 = (cy + r * Math.sin(a1)).toFixed(2);
-      segs += "<path d='M" + x0 + " " + y0 + " A" + r + " " + r + " 0 0 1 " + x1 + " " + y1 + "' stroke='#fff' stroke-opacity='" + (i < done ? 1 : .32) + "'/>";
-    }
-    return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'" + (size ? " width='" + size + "' height='" + size + "'" : "") + ">" +
-      "<defs><linearGradient id='acreT' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#fff' stop-opacity='.12'/><stop offset='1' stop-color='#000' stop-opacity='.08'/></linearGradient></defs>" +
-      "<rect width='64' height='64' rx='16' fill='" + c + "'/><rect width='64' height='64' rx='16' fill='url(#acreT)'/>" +
-      "<rect x='.5' y='.5' width='63' height='63' rx='15.5' fill='none' stroke='#fff' stroke-opacity='.14'/>" +
-      "<g fill='none' stroke-width='4' stroke-linecap='round'>" + segs + "</g>" +
-      "<path d='M24.5 32.6l5.2 5.2 9.8-10.6' fill='none' stroke='#fff' stroke-width='4.6' stroke-linecap='round' stroke-linejoin='round'/></svg>";
+  var INK = '#111827';
+  function glyph(c) {
+    return "<path d='M4 58 L32 6 L60 58 H47 L32 30 L17 58Z' fill='" + c + "'/><path d='M23 58 L32 41 L41 58Z' fill='" + c + "'/>";
+  }
+  function acreMark(c) { return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' aria-hidden='true'>" + glyph(c || 'currentColor') + "</svg>"; }
+  function acreTile() {
+    return "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='" + INK + "'/>" +
+      "<g transform='translate(11 12) scale(.656)'>" + glyph('#fff') + "</g></svg>";
   }
   window.acreMark = acreMark;
-  function svg(c) { return acreMark(c); }
   function sync() {
     if (document.title !== 'ACRE') document.title = 'ACRE';
-    var c = (getComputedStyle(document.documentElement).getPropertyValue('--primary') || '').trim() || '#005BAC';
-    if (c === last) return; last = c;
-    var href = 'data:image/svg+xml,' + encodeURIComponent(svg(c));
     var link = document.querySelector('link[rel="icon"][type="image/svg+xml"]');
     if (!link) { link = document.createElement('link'); link.rel = 'icon'; link.type = 'image/svg+xml'; document.head.appendChild(link); }
-    link.href = href;
-    var meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute('content', c);
+    var href = 'data:image/svg+xml,' + encodeURIComponent(acreTile());
+    if (link.href !== href) link.href = href;
     document.querySelectorAll('.brand-app-icon, .mobile-brand-icon-circle').forEach(function (el) {
-      el.classList.add('acre-mark'); el.innerHTML = acreMark(c).replace(/acreT/g, 'acreT' + Math.random().toString(36).slice(2, 7));
+      if (el.getAttribute('data-acre') === '2') return;
+      el.setAttribute('data-acre', '2'); el.classList.add('acre-mark'); el.innerHTML = acreMark();
     });
   }
   sync();
-  new MutationObserver(sync).observe(document.documentElement, { attributes: true, attributeFilter: ['style', 'class'] });
   var t = document.querySelector('title'); if (t) new MutationObserver(function () { if (document.title !== 'ACRE') document.title = 'ACRE'; }).observe(t, { childList: true, characterData: true, subtree: true });
-  window.addEventListener('load', sync);
+  window.addEventListener('load', sync); setTimeout(sync, 1500);
 })();
 
 /* ACRE — job type dropdown: show what each code means */
