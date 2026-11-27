@@ -116,6 +116,12 @@ html:not(.acre-open) body > :not(#acreGate):not(script):not(style) { visibility:
 .acre-box b { font-weight: 600; }
 .acre-box .acre-btn { flex: none; }
 .acre-file { position: relative; }
+.acre-roster { border: 1px solid var(--acre-a-line); border-radius: 10px; background: var(--acre-a-paper); text-transform: uppercase; overflow: hidden; }
+.acre-roster-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 16px; }
+.acre-roster-head b { font-weight: 600; }
+.acre-roster-head p { margin: 4px 0 0; font-size: 12px; line-height: 1.5; }
+.acre-roster .acre-table { background: var(--acre-a-surface); border-top: 1px solid var(--acre-a-line); }
+.acre-roster .acre-table td:first-child { width: 45%; }
 .acre-results { padding: 16px; border: 1px solid var(--acre-a-ink); border-radius: 10px; text-transform: uppercase; display: flex; flex-direction: column; gap: 10px; }
 .acre-results p { margin: 0; font-size: 12px; }
 .acre-results .acre-table td { padding: 8px 12px; }

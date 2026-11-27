@@ -233,6 +233,26 @@
     }).catch(function () {});
   }
 
+  /* take a person off the team list for good (this browser and the shared settings) */
+  function removeFromRoster(id) {
+    var custom = readJSON(KEY_CUSTOM, {}) || {};
+    delete custom[id];
+    writeJSON(KEY_CUSTOM, custom);
+    var del = readJSON(KEY_DELETED, []) || [];
+    if (del.indexOf(id) === -1) del.push(id);
+    writeJSON(KEY_DELETED, del);
+    var me = readJSON(KEY_AUTH, null);
+    try { if (typeof resetAssigneeDropdown === 'function') resetAssigneeDropdown(); if (typeof populateAssigneeDropdown === 'function') populateAssigneeDropdown(); } catch (e) {}
+    var upd = { deletedAccountIds: firebase.firestore.FieldValue.arrayUnion(id) };
+    upd['customAccounts.' + id] = firebase.firestore.FieldValue.delete();
+    upd['customPins.' + id] = firebase.firestore.FieldValue.delete();
+    var ref = db.collection('settings').doc('team_accounts');
+    return ref.update(upd).catch(function (err) {
+      if (err && err.code === 'not-found') return ref.set({ deletedAccountIds: [id] }, { merge: true });
+      throw err;
+    });
+  }
+
   /* job tracking rows + job-request list: stored in Firestore, never in the public files */
   function loadPrivateData() {
     var ref = db.collection('settings');
@@ -461,9 +481,9 @@
   function renderAdmin(users) {
     var box = document.getElementById('acreAdmin');
     if (!box) return;
-    var have = {};
-    users.forEach(function (u) { have[normEmp(u.empId)] = true; });
-    var missing = roster().filter(function (a) { return a && a.name && EMP_RE.test(normEmp(a.empId)) && !have[normEmp(a.empId)]; });
+    var have = {}, linked = {};
+    users.forEach(function (u) { have[normEmp(u.empId)] = true; if (u.legacyId) linked[u.legacyId] = true; });
+    var missing = roster().filter(function (a) { return a && a.name && EMP_RE.test(normEmp(a.empId)) && !have[normEmp(a.empId)] && !linked[a.id]; });
     var me = S.user && S.user.uid;
     var rows = users.map(function (u) {
       var self = u.id === me;
@@ -485,8 +505,14 @@
       '<div class="acre-field"><label for="acreARole">Role</label><select id="acreARole" name="role"><option value="member">Member</option><option value="visitor">Visitor</option><option value="admin">Admin</option></select></div>' +
       '<button class="acre-btn">Add person</button></form>' +
       '<div class="acre-table-wrap"><table class="acre-table"><thead><tr><th>Name</th><th>Employee ID</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
-      (missing.length ? '<div class="acre-box"><div><b>' + missing.length + ' team member' + (missing.length > 1 ? 's' : '') + ' from the old PIN list have no account yet</b><p class="acre-dim">' + missing.map(function (a) { return esc(a.name) + ' (' + esc(normEmp(a.empId)) + ')'; }).join(', ') + '</p></div>' +
-        '<button type="button" class="acre-btn" data-act="import-roster">Create their accounts</button></div>' : '') +
+      (missing.length ? '<div class="acre-roster"><div class="acre-roster-head"><div><b>On the team list without an account (' + missing.length + ')</b>' +
+        '<p class="acre-dim">From the old PIN list. Create an account, or remove a name you no longer need. Removing takes the name off the team and assignee lists for good; tasks keep their history.</p></div>' +
+        (missing.length > 1 ? '<button type="button" class="acre-btn is-small" data-act="import-roster">Create all</button>' : '') + '</div>' +
+        '<table class="acre-table"><tbody>' + missing.map(function (a) {
+          return '<tr><td><b>' + esc(a.name) + '</b></td><td class="acre-mono">' + esc(normEmp(a.empId)) + '</td><td class="acre-row-act">' +
+            '<button type="button" class="acre-btn is-small is-quiet" data-make="' + esc(a.id) + '">Create account</button>' +
+            '<button type="button" class="acre-btn is-small is-danger" data-drop="' + esc(a.id) + '">Remove</button></td></tr>';
+        }).join('') + '</tbody></table></div>' : '') +
       '<div class="acre-box"><div><b>Job data</b><p class="acre-dim">Job tracking table: ' + (pd.excel ? 'loaded' : 'not imported') + '. Job request list: ' + (pd.jobs ? 'loaded' : 'not imported') +
       '. Import <span class="acre-mono">acre-private-data.json</span> from the ACRE folder once; it is kept out of the public site.</p></div>' +
       '<label class="acre-btn is-quiet acre-file">Import file<input type="file" accept=".json,application/json" data-act="import-data" hidden></label></div>';
@@ -538,12 +564,31 @@
           .catch(function (err) { adminMsg(errText(err)); rerender(); });
       });
     });
+    var rosterById = {};
+    roster().forEach(function (a) { rosterById[a.id] = a; });
+    box.querySelectorAll('[data-make]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var a = rosterById[b.getAttribute('data-make')]; if (!a) return;
+        busy(b, true);
+        createUser({ name: a.name, empId: a.empId, role: a.role === 'ADMIN' ? 'admin' : 'member', legacyId: a.id })
+          .then(function (r) { S.results = [r]; adminMsg(''); rerender(); }, function (err) { adminMsg(a.name + ': ' + errText(err)); rerender(); });
+      });
+    });
+    box.querySelectorAll('[data-drop]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var a = rosterById[b.getAttribute('data-drop')]; if (!a) return;
+        if (!confirmInline(b, 'Confirm remove')) return;
+        busy(b, true);
+        removeFromRoster(a.id).then(function () { adminMsg(a.name + ' (' + normEmp(a.empId) + ') was removed from the team list.', true); rerender(); },
+          function (err) { adminMsg(errText(err)); rerender(); });
+      });
+    });
     var imp = box.querySelector('[data-act="import-roster"]');
     if (imp) imp.addEventListener('click', function () {
       busy(imp, true);
-      var have = {};
-      (S.users || users).forEach(function (u) { have[normEmp(u.empId)] = true; });
-      var todo = roster().filter(function (a) { return a && a.name && EMP_RE.test(normEmp(a.empId)) && !have[normEmp(a.empId)]; });
+      var have = {}, linked = {};
+      (S.users || users).forEach(function (u) { have[normEmp(u.empId)] = true; if (u.legacyId) linked[u.legacyId] = true; });
+      var todo = roster().filter(function (a) { return a && a.name && EMP_RE.test(normEmp(a.empId)) && !have[normEmp(a.empId)] && !linked[a.id]; });
       var out = [], fails = [];
       todo.reduce(function (p, a) {
         return p.then(function () {
