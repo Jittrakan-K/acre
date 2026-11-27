@@ -27,6 +27,7 @@
   var ROLE_NAME = { admin: 'Admin', member: 'Member', visitor: 'Visitor', disabled: 'Off' };
   function appRole(r) { return r === 'admin' ? 'ADMIN' : r === 'visitor' ? 'VISITOR' : 'MEMBER'; }
   var VISITOR_MSG = '⚠️ You can\'t add or edit tasks. Please contact Admin Jittrakan K.';
+  var OWNER_MSG = '⚠️ You can only edit tasks you added. Please contact Admin Jittrakan K.';
   var S = { user: null, profile: null, unlocked: false, wantsCloud: false, quiet: false, draft: {} };
   var gate, auth, db, config;
 
@@ -43,6 +44,18 @@
   function roster() { try { return typeof getTeamAccounts === 'function' ? getTeamAccounts() : []; } catch (e) { return []; } }
   function isAdmin() { return !!(S.profile && S.profile.role === 'admin'); }
   function isVisitor() { return !!(S.profile && S.profile.role === 'visitor'); }
+  function isMemberOnly() { return !!(S.profile && S.profile.role === 'member'); }
+  // a member owns a task they added: new tasks carry creatorUid / creatorEmpId; older ones carry the creator's
+  // PIN, which was the employee ID by default
+  function isOwnTask(item) {
+    if (!item || !S.profile) return false;
+    var cu = item.creatorUid || '', ce = normEmp(item.creatorEmpId || '');
+    if (cu) return cu === S.profile.uid;
+    if (ce) return ce === S.profile.empId;
+    return !!item.creatorPin && normEmp(item.creatorPin) === S.profile.empId;
+  }
+  function findTask(id) { try { return (typeof achievements !== 'undefined' && Array.isArray(achievements)) ? achievements.filter(function (a) { return a && a.id === id; })[0] : null; } catch (e) { return null; } }
+  function warn(msg) { if (typeof showToast === 'function') showToast(msg); }
   function errText(err) {
     var c = (err && err.code) || '';
     if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-login-credentials') return 'Employee ID or password is incorrect.';
@@ -633,9 +646,48 @@
     window[n] = function () { if (isVisitor()) return Promise.resolve(false); return f.apply(this, arguments); };
   });
   var origCanEdit = window.canUserEditTask;
-  if (typeof origCanEdit === 'function') window.canUserEditTask = function () {
+  if (typeof origCanEdit === 'function') window.canUserEditTask = function (user, item) {
     if (isVisitor()) return { allowed: false, reason: 'VISITOR', ownerName: 'Admin Jittrakan K.' };
+    if (isMemberOnly()) {
+      if (!item || isOwnTask(item)) return { allowed: true, isOverride: false };
+      return { allowed: false, reason: 'NOT_OWNER', ownerName: item.creatorName || item.lastEditedBy || item.assignee || 'another member' };
+    }
     return origCanEdit.apply(this, arguments);
+  };
+
+  /* members change only the tasks they added; anyone else's opens a warning instead */
+  function guardOwn(name, idOf) {
+    var f = window[name];
+    if (typeof f !== 'function') return;
+    window[name] = function () {
+      if (isMemberOnly()) {
+        var id = idOf.apply(null, arguments), item = id ? findTask(id) : null;
+        if (item && !isOwnTask(item)) { warn(OWNER_MSG); return; }
+      }
+      return f.apply(this, arguments);
+    };
+  }
+  guardOwn('openAchievementModal', function (id) { return id; });
+  guardOwn('deleteAchievement', function (id) { return id; });
+  guardOwn('handleSaveAchievement', function () { var el = document.getElementById('achvId'); return el && el.value; });
+  ['uploadPdfFileToFirestore', 'uploadImageFileToFirestore', 'uploadFolderFilesToFirestore'].forEach(function (n) {
+    var f = window[n];
+    if (typeof f !== 'function') return;
+    window[n] = function (db, achvId) {
+      var item = findTask(achvId);
+      if ((isVisitor() || isMemberOnly()) && item && !isOwnTask(item)) return Promise.resolve(false);
+      return f.apply(this, arguments);
+    };
+  });
+  var origSaveCloud = window.saveAchievementToCloud;
+  if (typeof origSaveCloud === 'function') window.saveAchievementToCloud = function (item) {
+    if (isMemberOnly() && item && !isOwnTask(item)) return Promise.resolve(false);
+    return origSaveCloud.apply(this, arguments);
+  };
+  var origPermHelp = window.alertFirestorePermissionHelp;
+  window.alertFirestorePermissionHelp = function () {
+    if (isAdmin() && typeof origPermHelp === 'function') return origPermHelp.apply(this, arguments);
+    warn(OWNER_MSG);
   };
   window.acreAuth = { signOut: function () { return auth.signOut(); }, openTeamAccounts: openTeamAccounts, openChangePassword: openChangePassword };
 

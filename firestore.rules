@@ -87,10 +87,38 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
-    // work records and their files
-    match /achievements/{rest=**} {
+    function myEmpId() {
+      return get(userPath()).data.empId;
+    }
+    // the task was added by the signed-in person: new tasks carry creatorUid / creatorEmpId,
+    // older ones the creator's PIN (which was the employee ID by default)
+    function ownsTask(d) {
+      return d.get('creatorUid', '') != ''
+        ? d.get('creatorUid', '') == request.auth.uid
+        : (d.get('creatorEmpId', '') != ''
+            ? d.get('creatorEmpId', '') == myEmpId()
+            : d.get('creatorPin', '') == myEmpId());
+    }
+    function taskPath(id) {
+      return /databases/$(database)/documents/achievements/$(id);
+    }
+
+    // work records: everyone signed in reads; admins change anything;
+    // members add their own and change or delete only what they added
+    match /achievements/{id} {
       allow read: if isReader();
-      allow write: if isMember();
+      allow create: if isAdmin()
+        || (isMember() && request.resource.data.get('creatorUid', '') == request.auth.uid);
+      allow update: if isAdmin()
+        || (isMember() && ownsTask(resource.data) && ownsTask(request.resource.data));
+      allow delete: if isAdmin() || (isMember() && ownsTask(resource.data));
+
+      // attached files (PDF, image, work folder); written while a new task is being saved, so the task may not exist yet
+      match /{sub=**} {
+        allow read: if isReader();
+        allow write: if isAdmin()
+          || (isMember() && (!exists(taskPath(id)) || ownsTask(get(taskPath(id)).data)));
+      }
     }
 
     // shared settings (workspaces, categories, team list, job tracking, job requests)
