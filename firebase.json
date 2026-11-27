@@ -18,7 +18,8 @@
       "README.md",
       "acre-private-data.json",
       "job_requests_db.*",
-      "ACHIEVEMENT-RECORD-WEB.zip"
+      "ACHIEVEMENT-RECORD-WEB.zip",
+      "firestore.rules"
     ],
     "rewrites": [
       {
