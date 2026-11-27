@@ -127,6 +127,14 @@ service cloud.firestore {
       allow write: if isMember();
     }
 
+    // who has ACRE open: everyone signed in sees it; each person writes only their own entry
+    match /presence/{uid} {
+      allow read: if isReader();
+      allow write: if isReader() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'empId', 'role', 'legacyId', 'state', 'at'])
+        && request.resource.data.state in ['online', 'away', 'offline'];
+    }
+
     // everything else stays closed
   }
 }

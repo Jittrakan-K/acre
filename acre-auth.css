@@ -138,3 +138,22 @@ html:not(.acre-open) body > :not(#acreGate):not(script):not(style) { visibility:
   .acre-add .acre-btn { grid-column: 1 / -1; }
   .acre-box { flex-direction: column; align-items: stretch; }
 }
+
+/* who is online: sidebar block under the menu (desktop sizes match the scaled sidebar) */
+.acre-presence { margin: 24px 0 0; padding: 0; font-family: var(--acre-a-font); }
+.acre-presence-h { margin: 0 0 8px; padding: 0 13.44px; font-size: 10.08px; font-weight: 700; color: #2D3748; letter-spacing: .04em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+.acre-presence-h span { font-weight: 600; color: var(--acre-a-ink-3); font-variant-numeric: tabular-nums; }
+.acre-presence ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.acre-presence li { display: flex; align-items: center; gap: 7.2px; height: 30px; padding: 0 13.44px; border-radius: 7px; min-width: 0; }
+.acre-presence-av { position: relative; flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--acre-a-line-soft); color: var(--acre-a-ink-2);
+  font-size: 8.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; letter-spacing: 0; }
+.acre-presence-av img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+.acre-presence-av i { position: absolute; right: -2px; bottom: -2px; width: 8px; height: 8px; border-radius: 50%; background: #22A06B; box-shadow: 0 0 0 2px var(--acre-a-paper); }
+.acre-presence-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10.92px; font-weight: 600; color: var(--acre-a-ink-2); text-transform: uppercase; }
+.acre-presence-name em { font-style: normal; font-weight: 500; color: var(--acre-a-ink-3); }
+.acre-presence-more { margin: 4px 0 0; padding: 0 13.44px; font-size: 10.08px; color: var(--acre-a-ink-3); text-transform: uppercase; }
+@media (max-width: 768px) { .acre-presence { display: none; } }
+
+.acre-seen { font-size: 12px; color: var(--acre-a-ink-3); white-space: nowrap; }
+.acre-seen.is-on { color: var(--acre-a-ok); font-weight: 600; }
+.acre-seen.is-on::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #22A06B; margin-right: 6px; vertical-align: 1px; }

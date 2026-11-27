@@ -182,6 +182,7 @@
       if (S.wantsCloud && origInitCloud) { try { origInitCloud(); } catch (e) { console.warn(e); } }
       loadPrivateData();
       if (isAdmin()) stripLegacyPins();
+      startPresence();
     }
     if (gate) { gate.hidden = true; gate.innerHTML = ''; }
     document.documentElement.classList.add('acre-open');
@@ -267,6 +268,89 @@
       S.privateData = { excel: r[0].exists, jobs: r[1].exists };
       if (changed && typeof renderAll === 'function') { try { renderAll(); } catch (e) {} }
     }).catch(function (e) { console.warn('private data', e); S.privateData = { excel: false, jobs: false, error: true }; });
+  }
+
+  /* ---------- who is online ----------
+     Each signed-in browser writes presence/{uid} when it opens, every 90 s while the tab is in view,
+     "away" when the tab is hidden and "offline" on sign-out or close. Online = seen in the last 4 minutes. */
+  var BEAT = 90 * 1000, FRESH = 4 * 60 * 1000;
+  var presence = {}, beatTimer = null, presenceUnsub = null;
+  function tsMs(v) { return v && typeof v.toMillis === 'function' ? v.toMillis() : (v && v.seconds ? v.seconds * 1000 : (v && v.__ts) || 0); }
+  function ago(ms) {
+    var m = Math.round((Date.now() - ms) / 60000);
+    if (m < 1) return 'just now'; if (m < 60) return m + ' min ago';
+    var h = Math.round(m / 60); if (h < 24) return h + ' h ago';
+    var d = Math.round(h / 24); return d + (d === 1 ? ' day ago' : ' days ago');
+  }
+  function presenceOf(uid) {
+    var p = presence[uid];
+    if (!p || !p.at) return { online: false, label: 'Not seen yet' };
+    var fresh = Date.now() - p.at < FRESH;
+    if (fresh && p.state === 'online') return { online: true, label: 'Online now' };
+    if (fresh && p.state === 'away') return { online: false, label: 'Away' };
+    return { online: false, label: 'Seen ' + ago(p.at) };
+  }
+  function writePresence(state) {
+    if (!S.user || !S.profile || !db) return Promise.resolve();
+    var p = S.profile;
+    return db.collection('presence').doc(S.user.uid).set({
+      name: p.name || '', empId: p.empId || '', role: p.role || '', legacyId: p.legacyId || '',
+      state: state, at: firebase.firestore.FieldValue.serverTimestamp()
+    }).catch(function () {});
+  }
+  function beat() { writePresence(document.visibilityState === 'hidden' ? 'away' : 'online'); }
+  function onVisibility() { beat(); }
+  function onLeave() { writePresence('offline'); }
+  function startPresence() {
+    if (beatTimer) return;
+    beat();
+    beatTimer = setInterval(function () { if (document.visibilityState !== 'hidden') beat(); }, BEAT);
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('pagehide', onLeave);
+    try {
+      presenceUnsub = db.collection('presence').onSnapshot(function (snap) {
+        presence = {};
+        snap.forEach(function (d) { var v = d.data() || {}; presence[d.id] = { name: v.name, empId: v.empId, role: v.role, legacyId: v.legacyId, state: v.state, at: tsMs(v.at) || Date.now() }; });
+        paintPresence();
+        paintSeenCells();
+      }, function () {});
+    } catch (e) {}
+    setInterval(function () { paintPresence(); paintSeenCells(); }, 60 * 1000); // labels age even when nothing new arrives
+  }
+  function paintSeenCells() {
+    document.querySelectorAll('#acreAdmin td[data-seen]').forEach(function (td) {
+      var v = presenceOf(td.getAttribute('data-seen'));
+      td.innerHTML = '<span class="acre-seen' + (v.online ? ' is-on' : '') + '">' + esc(v.label) + '</span>';
+    });
+  }
+  function stopPresence() {
+    if (beatTimer) { clearInterval(beatTimer); beatTimer = null; }
+    document.removeEventListener('visibilitychange', onVisibility);
+    window.removeEventListener('pagehide', onLeave);
+    if (presenceUnsub) { try { presenceUnsub(); } catch (e) {} presenceUnsub = null; }
+    return writePresence('offline');
+  }
+  function initialsOf(name) {
+    var w = String(name || '').replace(/\(.*?\)/g, '').trim().split(/[\s./-]+/).filter(Boolean);
+    return w.length ? ((w[0].charAt(0) || '') + (w[1] ? w[1].charAt(0) : (w[0].charAt(1) || ''))).toUpperCase() : '–';
+  }
+  // sidebar block under the menu: who has ACRE open right now
+  function paintPresence() {
+    var nav = document.querySelector('.desktop-main-nav');
+    if (!nav) return;
+    var box = document.getElementById('acrePresence');
+    if (!box) { box = document.createElement('section'); box.id = 'acrePresence'; box.className = 'acre-presence no-case'; box.setAttribute('aria-label', 'Online now'); nav.parentNode.insertBefore(box, nav.nextSibling); }
+    var me = S.user && S.user.uid;
+    var list = Object.keys(presence).map(function (uid) { return Object.assign({ uid: uid }, presence[uid], presenceOf(uid)); })
+      .filter(function (p) { return p.online; })
+      .sort(function (a, b) { return (a.uid === me ? -1 : b.uid === me ? 1 : 0) || String(a.name).localeCompare(String(b.name)); });
+    var shown = list.slice(0, 6);
+    box.innerHTML = '<h3 class="acre-presence-h">Online <span>' + list.length + '</span></h3>' +
+      (list.length ? '<ul>' + shown.map(function (p) {
+        var photo = typeof window.acreGetPhoto === 'function' && p.legacyId ? window.acreGetPhoto(p.legacyId) : null;
+        return '<li title="' + esc(p.name) + ' — online now"><span class="acre-presence-av">' + (photo ? '<img src="' + esc(photo) + '" alt="">' : esc(initialsOf(p.name))) + '<i aria-hidden="true"></i></span>' +
+          '<span class="acre-presence-name">' + esc(p.name) + (p.uid === me ? ' <em>(you)</em>' : '') + '</span></li>';
+      }).join('') + '</ul>' + (list.length > shown.length ? '<p class="acre-presence-more">+' + (list.length - shown.length) + ' more</p>' : '') : '<p class="acre-presence-more">No one else right now</p>');
   }
 
   /* ---------- form handling on the gate ---------- */
@@ -491,8 +575,10 @@
         '<select data-role="' + esc(u.id) + '" aria-label="Role for ' + esc(u.name) + '">' +
         ['admin', 'member', 'visitor', 'disabled'].map(function (r) { return '<option value="' + r + '"' + (u.role === r ? ' selected' : '') + '>' + ROLE_NAME[r] + '</option>'; }).join('') + '</select>';
       var status = u.role === 'disabled' ? 'Turned off' : u.mustChange ? 'Temporary password' : 'Active';
+      var seen = presenceOf(u.id);
       return '<tr><td><b>' + esc(u.name) + '</b>' + (self ? ' <span class="acre-dim">(you)</span>' : '') + '</td><td class="acre-mono">' + esc(u.empId) + '</td><td>' + roleSel + '</td>' +
         '<td><span class="acre-status' + (u.mustChange ? ' is-temp' : '') + (u.role === 'disabled' ? ' is-off' : '') + '">' + status + '</span></td>' +
+        '<td data-seen="' + esc(u.id) + '"><span class="acre-seen' + (seen.online ? ' is-on' : '') + '">' + esc(seen.label) + '</span></td>' +
         '<td class="acre-row-act">' + (self ? '' : '<button type="button" class="acre-btn is-small is-quiet" data-reset="' + esc(u.id) + '">Reset password</button><button type="button" class="acre-btn is-small is-danger" data-del="' + esc(u.id) + '">Remove</button>') + '</td></tr>';
     }).join('');
     var pd = S.privateData || {};
@@ -504,7 +590,7 @@
       '<div class="acre-field"><label for="acreAEmp">Employee ID</label><input id="acreAEmp" name="empId" autocapitalize="characters" spellcheck="false" required></div>' +
       '<div class="acre-field"><label for="acreARole">Role</label><select id="acreARole" name="role"><option value="member">Member</option><option value="visitor">Visitor</option><option value="admin">Admin</option></select></div>' +
       '<button class="acre-btn">Add person</button></form>' +
-      '<div class="acre-table-wrap"><table class="acre-table"><thead><tr><th>Name</th><th>Employee ID</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '<div class="acre-table-wrap"><table class="acre-table"><thead><tr><th>Name</th><th>Employee ID</th><th>Role</th><th>Status</th><th>Online</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
       (missing.length ? '<div class="acre-roster"><div class="acre-roster-head"><div><b>On the team list without an account (' + missing.length + ')</b>' +
         '<p class="acre-dim">From the old PIN list. Create an account, or remove a name you no longer need. Removing takes the name off the team and assignee lists for good; tasks keep their history.</p></div>' +
         (missing.length > 1 ? '<button type="button" class="acre-btn is-small" data-act="import-roster">Create all</button>' : '') + '</div>' +
@@ -656,7 +742,7 @@
     if (S.unlocked && window.currentUser) { if (typeof cb === 'function') setTimeout(cb, 0); return; }
     if (gate && gate.hidden) showSignedOut();
   };
-  window.logoutUser = function () { closeAccountMenu(); closeModal(); auth.signOut(); };
+  window.logoutUser = function () { closeAccountMenu(); closeModal(); stopPresence().then(function () { auth.signOut(); }); };
   window.openChangePinModal = function () { openChangePassword(); };
   // the employee ID is the sign-in name: shown in My profile, not editable there
   var origProfile = window.openUserProfileModal;
