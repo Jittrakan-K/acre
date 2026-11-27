@@ -618,8 +618,44 @@
   if (typeof origProfile === 'function') window.openUserProfileModal = function () {
     var r = origProfile.apply(this, arguments);
     var f = document.getElementById('userProfileEmpId');
-    if (f && S.profile) { f.value = S.profile.empId; f.readOnly = true; f.title = 'Your sign-in ID. An admin can change accounts in Team accounts.'; }
+    if (f && S.profile) {
+      f.value = S.profile.empId;
+      f.readOnly = !isAdmin();
+      f.title = isAdmin() ? 'Your sign-in ID. Changing it changes what you type to sign in.' : 'Your sign-in ID. Only an admin can change it.';
+    }
     return r;
+  };
+  // an admin may change their own employee ID; the sign-in mapping moves with it
+  function changeOwnEmpId(next) {
+    var cur = S.profile.empId, uid = S.profile.uid, user = auth.currentUser;
+    if (!EMP_RE.test(next)) return Promise.reject(new Error('Employee ID: A–Z, 0–9, dot, dash or underscore, 2 to 20 characters.'));
+    return db.collection('logins').doc(next).get().then(function (snap) {
+      if (snap.exists) throw new Error('Employee ID ' + next + ' already belongs to another account.');
+      return db.collection('logins').doc(cur).get();
+    }).then(function (old) {
+      var b = db.batch();
+      b.set(db.collection('logins').doc(next), { email: user.email, uid: uid });
+      if (old.exists && old.data().uid === uid) b.delete(db.collection('logins').doc(cur));
+      b.update(db.collection('users').doc(uid), { empId: next });
+      return b.commit();
+    }).then(function () { S.profile.empId = next; });
+  }
+  var origSaveProfile = window.saveUserProfile;
+  if (typeof origSaveProfile === 'function') window.saveUserProfile = function () {
+    var self = this, args = arguments;
+    var f = document.getElementById('userProfileEmpId');
+    var err = document.getElementById('userProfileErrorMessage');
+    if (!S.profile || !f) return origSaveProfile.apply(self, args);
+    if (!isAdmin()) { f.value = S.profile.empId; return origSaveProfile.apply(self, args); }
+    var next = normEmp(f.value);
+    f.value = next;
+    if (next === S.profile.empId) return origSaveProfile.apply(self, args);
+    if (err) err.textContent = '';
+    return changeOwnEmpId(next).then(function () {
+      return origSaveProfile.apply(self, args);
+    }, function (e) {
+      if (err) err.textContent = '⚠️ ' + errText(e);
+    });
   };
   window.openAdminTeamPinsModal = function () { openTeamAccounts(); };
   /* visitors can look at everything but change nothing */
