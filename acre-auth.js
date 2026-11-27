@@ -44,6 +44,7 @@
     if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-login-credentials') return 'Employee ID or password is incorrect.';
     if (c === 'auth/too-many-requests') return 'Too many attempts. Wait a few minutes, then try again.';
     if (c === 'auth/network-request-failed' || c === 'unavailable') return 'Cannot reach the server. Check the internet connection.';
+    if (c === 'auth/configuration-not-found') return 'Firebase Authentication is not set up yet. In the Firebase console open Authentication, press Get started, then turn on Email/Password.';
     if (c === 'auth/operation-not-allowed') return 'Email/Password sign-in is not turned on in Firebase yet (Authentication › Sign-in method).';
     if (c === 'auth/weak-password') return 'Password needs at least ' + MIN_PW + ' characters.';
     if (c === 'auth/requires-recent-login') return 'Sign out, sign in again, then change the password.';
