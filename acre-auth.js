@@ -24,6 +24,9 @@
   var KEY_DELETED = 'orbray_team_deleted_accounts_v1';
   var EMU = /^(127\.0\.0\.1|localhost)$/.test(location.hostname) && /[?&]acre-emulator=1/.test(location.search);
 
+  var ROLE_NAME = { admin: 'Admin', member: 'Member', visitor: 'Visitor', disabled: 'Off' };
+  function appRole(r) { return r === 'admin' ? 'ADMIN' : r === 'visitor' ? 'VISITOR' : 'MEMBER'; }
+  var VISITOR_MSG = '⚠️ You can\'t add or edit tasks. Please contact Admin Jittrakan K.';
   var S = { user: null, profile: null, unlocked: false, wantsCloud: false, quiet: false, draft: {} };
   var gate, auth, db, config;
 
@@ -39,6 +42,7 @@
   function writeJSON(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} }
   function roster() { try { return typeof getTeamAccounts === 'function' ? getTeamAccounts() : []; } catch (e) { return []; } }
   function isAdmin() { return !!(S.profile && S.profile.role === 'admin'); }
+  function isVisitor() { return !!(S.profile && S.profile.role === 'visitor'); }
   function errText(err) {
     var c = (err && err.code) || '';
     if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-login-credentials') return 'Employee ID or password is incorrect.';
@@ -145,7 +149,7 @@
     if (!S.unlocked) showBoot('Checking your account');
     return db.collection('users').doc(user.uid).get().then(function (snap) {
       var p = snap.exists ? snap.data() : null;
-      if (!p || (p.role !== 'admin' && p.role !== 'member')) {
+      if (!p || ['admin', 'member', 'visitor'].indexOf(p.role) === -1) {
         if (S.unlocked) { auth.signOut(); return; }
         return showBlocked(p && p.role === 'disabled' ? 'This account has been turned off. Ask your ACRE admin.' : null);
       }
@@ -175,12 +179,12 @@
   function applyProfileToSession() {
     if (!S.unlocked || !S.profile) return;
     var p = S.profile;
-    var role = p.role === 'admin' ? 'ADMIN' : 'MEMBER';
+    var role = appRole(p.role);
     var acct = roster().filter(function (a) { return a.id === p.legacyId || normEmp(a.empId) === p.empId; })[0];
     var u = Object.assign({ company: 'ORBRAY', department: 'PRODUCTION TECHNOLOGY', avatar: '👤' },
       acct || { id: p.legacyId || ('usr_' + p.empId.toLowerCase()), name: p.name, empId: p.empId },
       { role: role, uid: p.uid, pin: '' });
-    if (!acct) ensureRoster({ id: u.id, name: p.name, empId: p.empId, role: role });
+    if (!acct && p.role !== 'visitor') ensureRoster({ id: u.id, name: p.name, empId: p.empId, role: role });
     try { currentUser = u; } catch (e) {}
     window.currentUser = u;
     writeJSON(KEY_AUTH, u);
@@ -393,7 +397,7 @@
         b.set(db.collection('logins').doc(id), { email: email, uid: uid });
         return b.commit();
       }).then(function () {
-        ensureRoster({ id: legacyId, name: o.name, empId: id, role: o.role === 'admin' ? 'ADMIN' : 'MEMBER' });
+        if (o.role !== 'visitor') ensureRoster({ id: legacyId, name: o.name, empId: id, role: appRole(o.role) });
         return { name: o.name, empId: id, temp: temp };
       });
     });
@@ -420,7 +424,7 @@
   }
   function setRole(u, role) {
     return db.collection('users').doc(u.id).update({ role: role }).then(function () {
-      if (role !== 'disabled') ensureRoster({ id: u.legacyId || ('usr_' + u.empId.toLowerCase()), name: u.name, empId: u.empId, role: role === 'admin' ? 'ADMIN' : 'MEMBER' });
+      if (role === 'admin' || role === 'member') ensureRoster({ id: u.legacyId || ('usr_' + u.empId.toLowerCase()), name: u.name, empId: u.empId, role: appRole(role) });
     });
   }
 
@@ -452,7 +456,7 @@
       var self = u.id === me;
       var roleSel = self ? '<span class="acre-chip">ADMIN</span>' :
         '<select data-role="' + esc(u.id) + '" aria-label="Role for ' + esc(u.name) + '">' +
-        ['admin', 'member', 'disabled'].map(function (r) { return '<option value="' + r + '"' + (u.role === r ? ' selected' : '') + '>' + (r === 'admin' ? 'Admin' : r === 'member' ? 'Member' : 'Off') + '</option>'; }).join('') + '</select>';
+        ['admin', 'member', 'visitor', 'disabled'].map(function (r) { return '<option value="' + r + '"' + (u.role === r ? ' selected' : '') + '>' + ROLE_NAME[r] + '</option>'; }).join('') + '</select>';
       var status = u.role === 'disabled' ? 'Turned off' : u.mustChange ? 'Temporary password' : 'Active';
       return '<tr><td><b>' + esc(u.name) + '</b>' + (self ? ' <span class="acre-dim">(you)</span>' : '') + '</td><td class="acre-mono">' + esc(u.empId) + '</td><td>' + roleSel + '</td>' +
         '<td><span class="acre-status' + (u.mustChange ? ' is-temp' : '') + (u.role === 'disabled' ? ' is-off' : '') + '">' + status + '</span></td>' +
@@ -465,7 +469,7 @@
       '<form class="acre-add" data-form="add" novalidate>' +
       '<div class="acre-field"><label for="acreANm">Name</label><input id="acreANm" name="name" required></div>' +
       '<div class="acre-field"><label for="acreAEmp">Employee ID</label><input id="acreAEmp" name="empId" autocapitalize="characters" spellcheck="false" required></div>' +
-      '<div class="acre-field"><label for="acreARole">Role</label><select id="acreARole" name="role"><option value="member">Member</option><option value="admin">Admin</option></select></div>' +
+      '<div class="acre-field"><label for="acreARole">Role</label><select id="acreARole" name="role"><option value="member">Member</option><option value="visitor">Visitor</option><option value="admin">Admin</option></select></div>' +
       '<button class="acre-btn">Add person</button></form>' +
       '<div class="acre-table-wrap"><table class="acre-table"><thead><tr><th>Name</th><th>Employee ID</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
       (missing.length ? '<div class="acre-box"><div><b>' + missing.length + ' team member' + (missing.length > 1 ? 's' : '') + ' from the old PIN list have no account yet</b><p class="acre-dim">' + missing.map(function (a) { return esc(a.name) + ' (' + esc(normEmp(a.empId)) + ')'; }).join(', ') + '</p></div>' +
@@ -499,7 +503,7 @@
     box.querySelectorAll('select[data-role]').forEach(function (sel) {
       sel.addEventListener('change', function () {
         var u = byId[sel.getAttribute('data-role')];
-        setRole(u, sel.value).then(function () { adminMsg(u.name + ' is now ' + (sel.value === 'disabled' ? 'turned off' : sel.value) + '.', true); rerender(); })
+        setRole(u, sel.value).then(function () { adminMsg(u.name + ' is now ' + (sel.value === 'disabled' ? 'turned off' : ROLE_NAME[sel.value].toLowerCase()) + '.', true); rerender(); })
           .catch(function (err) { adminMsg(errText(err)); rerender(); });
       });
     });
@@ -605,6 +609,34 @@
     return r;
   };
   window.openAdminTeamPinsModal = function () { openTeamAccounts(); };
+  /* visitors can look at everything but change nothing */
+  ['openAchievementModal', 'handleSaveAchievement', 'deleteAchievement', 'executeActionSheetDelete', 'handleImportJson',
+   'openCategoryModal', 'handleAddCategory', 'handleSaveEditCategory', 'handleDeleteCategory',
+   'openWorkspaceModal', 'handleAddWorkspace', 'handleSaveEditWorkspace', 'handleDeleteWorkspace',
+   'handleImageUpload', 'handlePdfUpload', 'handleFolderUpload'].forEach(function (n) {
+    var f = window[n];
+    if (typeof f !== 'function') return;
+    window[n] = function () {
+      if (isVisitor()) {
+        var ev = arguments[0];
+        if (ev && typeof ev.preventDefault === 'function') ev.preventDefault();
+        if (ev && ev.target && ev.target.type === 'file') ev.target.value = '';
+        if (typeof showToast === 'function') showToast(VISITOR_MSG);
+        return;
+      }
+      return f.apply(this, arguments);
+    };
+  });
+  ['saveAchievementToCloud', 'deleteAchievementFromCloud', 'syncTeamAccountsToFirestore'].forEach(function (n) {
+    var f = window[n];
+    if (typeof f !== 'function') return;
+    window[n] = function () { if (isVisitor()) return Promise.resolve(false); return f.apply(this, arguments); };
+  });
+  var origCanEdit = window.canUserEditTask;
+  if (typeof origCanEdit === 'function') window.canUserEditTask = function () {
+    if (isVisitor()) return { allowed: false, reason: 'VISITOR', ownerName: 'Admin Jittrakan K.' };
+    return origCanEdit.apply(this, arguments);
+  };
   window.acreAuth = { signOut: function () { return auth.signOut(); }, openTeamAccounts: openTeamAccounts, openChangePassword: openChangePassword };
 
   // the app's REST fallback reads Firestore directly: send the signed-in token with it

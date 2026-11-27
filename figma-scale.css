@@ -10979,6 +10979,14 @@ html body :is(.at-code, .badge-code, .badge-quotation, #acreFloor){ display: inl
   max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
 html body :is(td.at-files, #acreFloor){ font-size: 0 !important; }
 html body :is(td.at-files .at-file, td.at-files .at-dim, #acreFloor){ font-size: 10.08px !important; }
+html body :is(.desktop-nav-link, #btnHeaderTools, #btnHeaderAuth, #acreFloor){ gap: 10.08px !important; padding-left: 13.44px !important; padding-right: 10.08px !important; justify-content: flex-start !important; }
+html body :is(.desktop-nav-link > :first-child, #btnHeaderTools > :first-child, #acreFloor){ width: 15.12px !important; height: 15.12px !important; min-width: 15.12px !important; flex: none !important; margin: 0 !important; padding: 0 !important; }
+html body :is(.desktop-nav-link > :first-child svg, #btnHeaderTools > :first-child svg, #acreFloor){ width: 15.12px !important; height: 15.12px !important; }
+html body :is(#btnHeaderAuth, #acreFloor)::before{ width: 15.12px !important; height: 15.12px !important; min-width: 15.12px !important; flex: none !important; margin: 0 !important; -webkit-mask-size: 15.12px 15.12px !important; mask-size: 15.12px 15.12px !important; }
+html body :is(#headerAuthText, #acreFloor){ margin: 0 !important; }
+html body :is(#btnHeaderTools .dropdown-chevron, #acreFloor){ display: none !important; }
+html body .desktop-main-nav::before, html body .header-actions::before{ padding: 0 13.44px 8.4px !important; letter-spacing: .04em !important; }
+html body :is(#btnHeaderAuth, #acreFloor){ background: transparent !important; border: 0 !important; box-shadow: none !important; }
 .at-wrap{ background: #fff; border-radius: 12.6px; box-shadow: 0 2.94px 4.62px rgba(0,0,0,.02); overflow: hidden; }
 .at-bar-top{ display: flex; align-items: center; justify-content: space-between; gap: 10.08px; padding: 11.76px 15.12px; border-bottom: 1px solid #EDF2F7; flex-wrap: wrap; }
 .at-summary{ display: flex; align-items: center; gap: 6.72px; font-size: 10.08px; font-weight: 700; color: #64748B; letter-spacing: .03em; flex-wrap: wrap; }
@@ -12200,4 +12208,12 @@ html body :is(.at-code, .badge-code, .badge-quotation, #acreFloor){ display: inl
   max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
 html body :is(td.at-files, #acreFloor){ font-size: 0 !important; }
 html body :is(td.at-files .at-file, td.at-files .at-dim, #acreFloor){ font-size: 10.08px !important; }
+html body :is(.desktop-nav-link, #btnHeaderTools, #btnHeaderAuth, #acreFloor){ gap: 10.08px !important; padding-left: 13.44px !important; padding-right: 10.08px !important; justify-content: flex-start !important; }
+html body :is(.desktop-nav-link > :first-child, #btnHeaderTools > :first-child, #acreFloor){ width: 15.12px !important; height: 15.12px !important; min-width: 15.12px !important; flex: none !important; margin: 0 !important; padding: 0 !important; }
+html body :is(.desktop-nav-link > :first-child svg, #btnHeaderTools > :first-child svg, #acreFloor){ width: 15.12px !important; height: 15.12px !important; }
+html body :is(#btnHeaderAuth, #acreFloor)::before{ width: 15.12px !important; height: 15.12px !important; min-width: 15.12px !important; flex: none !important; margin: 0 !important; -webkit-mask-size: 15.12px 15.12px !important; mask-size: 15.12px 15.12px !important; }
+html body :is(#headerAuthText, #acreFloor){ margin: 0 !important; }
+html body :is(#btnHeaderTools .dropdown-chevron, #acreFloor){ display: none !important; }
+html body .desktop-main-nav::before, html body .header-actions::before{ padding: 0 13.44px 8.4px !important; letter-spacing: .04em !important; }
+html body :is(#btnHeaderAuth, #acreFloor){ background: transparent !important; border: 0 !important; box-shadow: none !important; }
 }

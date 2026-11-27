@@ -2787,3 +2787,13 @@ html body :is(.at-code, .badge-code, .badge-quotation, #acreFloor) { display: in
   max-width: 100% !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
 html body :is(td.at-files, #acreFloor) { font-size: 0 !important; }
 html body :is(td.at-files .at-file, td.at-files .at-dim, #acreFloor) { font-size: 12px !important; }
+
+/* sidebar rhythm (v77): one icon size, one left edge for labels and icons, one text column */
+html body :is(.desktop-nav-link, #btnHeaderTools, #btnHeaderAuth, #acreFloor) { gap: 12px !important; padding-left: 16px !important; padding-right: 12px !important; justify-content: flex-start !important; }
+html body :is(.desktop-nav-link > :first-child, #btnHeaderTools > :first-child, #acreFloor) { width: 18px !important; height: 18px !important; min-width: 18px !important; flex: none !important; margin: 0 !important; padding: 0 !important; }
+html body :is(.desktop-nav-link > :first-child svg, #btnHeaderTools > :first-child svg, #acreFloor) { width: 18px !important; height: 18px !important; }
+html body :is(#btnHeaderAuth, #acreFloor)::before { width: 18px !important; height: 18px !important; min-width: 18px !important; flex: none !important; margin: 0 !important; -webkit-mask-size: 18px 18px !important; mask-size: 18px 18px !important; }
+html body :is(#headerAuthText, #acreFloor) { margin: 0 !important; }
+html body :is(#btnHeaderTools .dropdown-chevron, #acreFloor) { display: none !important; }
+html body .desktop-main-nav::before, html body .header-actions::before { padding: 0 16px 10px !important; letter-spacing: .04em !important; }
+html body :is(#btnHeaderAuth, #acreFloor) { background: transparent !important; border: 0 !important; box-shadow: none !important; }

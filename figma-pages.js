@@ -147,8 +147,14 @@
   function patch() {
     var orig = window.showToast;
     if (typeof orig !== 'function' || orig.__acreQuiet) return;
+    var WARN = '<svg width="16" height="16" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
     var quiet = function (message) {
-      if (IMPORTANT.test(String(message == null ? '' : message))) return orig.apply(this, arguments);
+      if (!IMPORTANT.test(String(message == null ? '' : message))) return;
+      var r = orig.apply(this, arguments);
+      // warnings and errors get a warning mark, not the green tick
+      var c = document.getElementById('toastContainer'), t = c && c.lastElementChild, ic = t && t.querySelector('svg');
+      if (ic) { ic.outerHTML = WARN; t.classList.add('is-warn'); }
+      return r;
     };
     quiet.__acreQuiet = true;
     window.showToast = quiet;

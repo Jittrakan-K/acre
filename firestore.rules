@@ -2,7 +2,8 @@ rules_version = '2';
 // ACRE — only signed-in team members can read or change anything.
 // Sign-in is employee ID + password (Firebase Authentication, Email/Password provider).
 //   config/setup      created once, together with the first admin account
-//   users/{uid}       name, empId, role: admin | member | disabled, mustChange
+//   users/{uid}       name, empId, role: admin | member | visitor | disabled, mustChange
+//                     visitor = read only (sees everything, changes nothing)
 //   logins/{empId}    employee ID -> hidden sign-in email (read one at a time, never listed)
 //   achievements/**   records and their file sub-collections
 //   settings/*        workspaces, categories, team list, job tracking table, job-request list
@@ -18,7 +19,12 @@ service cloud.firestore {
     function loginPath(empId) {
       return /databases/$(database)/documents/logins/$(empId);
     }
-    // member = has a users document whose role is admin or member (disabled = no access)
+    // reader = signed in with an active role (disabled = no access)
+    function isReader() {
+      return request.auth != null && exists(userPath())
+        && get(userPath()).data.role in ['admin', 'member', 'visitor'];
+    }
+    // member = may add and change work (admin or member; visitor is read only)
     function isMember() {
       return request.auth != null && exists(userPath())
         && get(userPath()).data.role in ['admin', 'member'];
@@ -28,7 +34,7 @@ service cloud.firestore {
     }
     function validProfile() {
       let d = request.resource.data;
-      return d.role in ['admin', 'member', 'disabled']
+      return d.role in ['admin', 'member', 'visitor', 'disabled']
         && d.name is string && d.name.size() > 0 && d.name.size() <= 80
         && d.empId is string && d.empId.matches('^[A-Z0-9][A-Z0-9._-]{1,19}$');
     }
@@ -54,7 +60,7 @@ service cloud.firestore {
     // members read the list; admins add people and change roles.
     // an admin cannot lower their own role or delete themselves, so an admin always remains.
     match /users/{uid} {
-      allow read: if request.auth != null && (request.auth.uid == uid || isMember());
+      allow read: if request.auth != null && (request.auth.uid == uid || isReader());
       allow create: if validProfile() && (
         isAdmin()
         || (request.auth != null && request.auth.uid == uid
@@ -83,12 +89,14 @@ service cloud.firestore {
 
     // work records and their files
     match /achievements/{rest=**} {
-      allow read, write: if isMember();
+      allow read: if isReader();
+      allow write: if isMember();
     }
 
     // shared settings (workspaces, categories, team list, job tracking, job requests)
     match /settings/{docId} {
-      allow read, write: if isMember();
+      allow read: if isReader();
+      allow write: if isMember();
     }
 
     // everything else stays closed
