@@ -15,7 +15,10 @@
       "**/*.backup",
       "index.before-redesign.html",
       "_UPLOAD-TO-GITHUB/**",
-      "README.md"
+      "README.md",
+      "acre-private-data.json",
+      "job_requests_db.*",
+      "ACHIEVEMENT-RECORD-WEB.zip"
     ],
     "rewrites": [
       {

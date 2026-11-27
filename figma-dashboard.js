@@ -401,7 +401,7 @@
     if (!ac) { ac = document.createElement('div'); ac.id = 'fxAcct'; ac.className = 'fx-acct'; head.insertBefore(ac, head.firstChild); }
     ac.innerHTML = '<div class="fx-acct-top"><span class="fx-acct-av">' + esc(initials(name)) + '</span>' +
       '<span class="fx-acct-id"><b>' + esc(name) + '</b><span class="fx-acct-role' + (role === 'ADMIN' ? ' is-admin' : '') + '">' + esc(role) + '</span></span></div>' +
-      '<dl class="fx-acct-meta"><dt>EMPLOYEE ID</dt><dd>' + esc(id) + '</dd><dt>COMPANY</dt><dd>' + esc(co) + '</dd><dt>PIN</dt><dd>•••••</dd></dl>';
+      '<dl class="fx-acct-meta"><dt>EMPLOYEE ID</dt><dd>' + esc(id) + '</dd><dt>COMPANY</dt><dd>' + esc(co) + '</dd></dl>';
   }
   function injectCss() {
     if (document.getElementById('fxDashCriticalCss')) return;

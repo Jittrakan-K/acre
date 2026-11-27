@@ -1,8 +1,96 @@
 rules_version = '2';
+// ACRE — only signed-in team members can read or change anything.
+// Sign-in is employee ID + password (Firebase Authentication, Email/Password provider).
+//   config/setup      created once, together with the first admin account
+//   users/{uid}       name, empId, role: admin | member | disabled, mustChange
+//   logins/{empId}    employee ID -> hidden sign-in email (read one at a time, never listed)
+//   achievements/**   records and their file sub-collections
+//   settings/*        workspaces, categories, team list, job tracking table, job-request list
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
+
+    function userPath() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
     }
+    function setupPath() {
+      return /databases/$(database)/documents/config/setup;
+    }
+    function loginPath(empId) {
+      return /databases/$(database)/documents/logins/$(empId);
+    }
+    // member = has a users document whose role is admin or member (disabled = no access)
+    function isMember() {
+      return request.auth != null && exists(userPath())
+        && get(userPath()).data.role in ['admin', 'member'];
+    }
+    function isAdmin() {
+      return isMember() && get(userPath()).data.role == 'admin';
+    }
+    function validProfile() {
+      let d = request.resource.data;
+      return d.role in ['admin', 'member', 'disabled']
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 80
+        && d.empId is string && d.empId.matches('^[A-Z0-9][A-Z0-9._-]{1,19}$');
+    }
+    // the person doing first-time setup: no config/setup yet, and this batch creates it naming them admin
+    function isFirstSetup() {
+      return request.auth != null
+        && !exists(setupPath())
+        && existsAfter(setupPath())
+        && getAfter(setupPath()).data.adminUid == request.auth.uid;
+    }
+
+    // anyone may check whether setup is done; it is created once with the first admin
+    match /config/setup {
+      allow get: if true;
+      allow create: if request.auth != null
+        && !exists(setupPath())
+        && request.resource.data.adminUid == request.auth.uid
+        && existsAfter(userPath())
+        && getAfter(userPath()).data.role == 'admin';
+      allow update, delete: if false;
+    }
+
+    // members read the list; admins add people and change roles.
+    // an admin cannot lower their own role or delete themselves, so an admin always remains.
+    match /users/{uid} {
+      allow read: if request.auth != null && (request.auth.uid == uid || isMember());
+      allow create: if validProfile() && (
+        isAdmin()
+        || (request.auth != null && request.auth.uid == uid
+            && request.resource.data.role == 'admin'
+            && isFirstSetup()));
+      allow update: if isAdmin() && validProfile()
+        && (uid != request.auth.uid || request.resource.data.role == 'admin');
+      // the owner says they have chosen their own password (only this field)
+      allow update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['mustChange'])
+        && request.resource.data.mustChange == false;
+      allow delete: if isAdmin() && uid != request.auth.uid;
+    }
+
+    // employee ID -> sign-in email; looked up one at a time at sign-in, never listed
+    match /logins/{empId} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create, update: if empId.matches('^[A-Z0-9][A-Z0-9._-]{1,19}$')
+        && request.resource.data.keys().hasOnly(['email', 'uid'])
+        && request.resource.data.email is string
+        && request.resource.data.uid is string
+        && (isAdmin() || (isFirstSetup() && request.resource.data.uid == request.auth.uid));
+      allow delete: if isAdmin();
+    }
+
+    // work records and their files
+    match /achievements/{rest=**} {
+      allow read, write: if isMember();
+    }
+
+    // shared settings (workspaces, categories, team list, job tracking, job requests)
+    match /settings/{docId} {
+      allow read, write: if isMember();
+    }
+
+    // everything else stays closed
   }
 }

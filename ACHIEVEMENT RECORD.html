@@ -23,16 +23,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&family=Noto+Sans+Thai:wght@400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20261029_v36_opt">
-  <link rel="stylesheet" href="figma-theme.css?v=20261103_v75">
-  <link rel="stylesheet" id="fxScaleCss" href="figma-scale.css?v=20261103_v75">
+  <link rel="stylesheet" href="figma-theme.css?v=20261103_v76">
+  <link rel="stylesheet" href="acre-auth.css?v=20261103_v76">
+  <link rel="stylesheet" id="fxScaleCss" href="figma-scale.css?v=20261103_v76">
   <!-- Chart.js CDN for Real-time Analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="figma-theme.js?v=20261103_v75"></script>
+  <script src="figma-theme.js?v=20261103_v76"></script>
   <!-- Google Firebase SDK (v10 compat) for Multi-Device Real-Time Cloud Sync -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
+  <div id="acreGate" class="acre-gate no-case"><div class="acre-gate-in"><div class="acre-boot"><span class="acre-tile is-big"><svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="currentColor"/><g transform="translate(11 12) scale(.656)" fill="#fff"><path d="M4 58 L32 6 L60 58 H47 L32 30 L17 58Z"/><path d="M23 58 L32 41 L41 58Z"/></g></svg></span><b>ACRE</b><span class="acre-track" aria-hidden="true"><span></span></span><p role="status">Opening ACRE</p></div></div></div>
 
   <!-- Print-only Header -->
   <div class="print-header">
@@ -259,16 +262,16 @@
                 <span>&bull;</span>
                 <span id="dropdownCompany">🏢 ORBRAY</span>
               </div>
-              <div class="auth-dropdown-pin" id="dropdownUserPin" style="margin-top: 4px;">รหัส PIN: •••••</div>
+              <div class="auth-dropdown-pin" id="dropdownUserPin" style="display: none;"></div>
             </div>
             <div class="auth-dropdown-item" onclick="openUserProfileModal()">
               <span>👤</span> ข้อมูลโปรไฟล์ของฉัน (MY PROFILE)
             </div>
             <div class="auth-dropdown-item" onclick="openChangePinModal()">
-              <span>🔑</span> เปลี่ยนรหัส PIN ของฉัน
+              <span>🔑</span> Change my password
             </div>
             <div class="auth-dropdown-item admin-only-item" id="adminViewTeamPinsDropdownItem" style="display: none;" onclick="openAdminTeamPinsModal()">
-              <span>🛡️</span> จัดการบัญชีและรหัส PIN (ADMIN)
+              <span>🛡️</span> Team accounts
             </div>
             <div class="auth-dropdown-item text-danger" onclick="logoutUser()">
               <span>🚪</span> ออกจากระบบ (LOGOUT)
@@ -1646,8 +1649,8 @@
           <input type="text" id="adminEditAccDepartment" list="departmentOptionsList" class="form-control" placeholder="เช่น PRODUCTION TECHNOLOGY, ENGINEERING" autocomplete="off" />
         </div>
 
-        <!-- PIN Input -->
-        <div style="margin-bottom: 14px;">
+        <!-- PIN Input (unused since sign-in moved to employee ID + password) -->
+        <div style="display: none;">
           <label class="form-label" for="adminEditAccPin" style="font-weight: 700; color: #1e293b; display: flex; justify-content: space-between;">
             <span>รหัส PIN เข้าสู่ระบบ (4-8 หลัก) <span style="color: #ef4444;">*</span></span>
           </label>
@@ -1749,8 +1752,8 @@
           <input type="text" id="adminAddAccDepartment" list="departmentOptionsList" class="form-control" value="PRODUCTION TECHNOLOGY" placeholder="เช่น PRODUCTION TECHNOLOGY, ENGINEERING" autocomplete="off" />
         </div>
 
-        <!-- PIN Input -->
-        <div style="margin-bottom: 14px;">
+        <!-- PIN Input (unused since sign-in moved to employee ID + password) -->
+        <div style="display: none;">
           <label class="form-label" for="adminAddAccPin" style="font-weight: 700; color: #1e293b;">
             รหัส PIN เข้าสู่ระบบ (4-8 หลัก) <span style="color: #ef4444;">*</span>
           </label>
@@ -1841,8 +1844,8 @@
           <input type="text" id="userProfileDepartment" list="departmentOptionsList" class="form-control" placeholder="เช่น PRODUCTION TECHNOLOGY, ENGINEERING" autocomplete="off" />
         </div>
 
-        <!-- PIN Input -->
-        <div style="margin-bottom: 14px;">
+        <!-- PIN Input (unused since sign-in moved to employee ID + password) -->
+        <div style="display: none;">
           <label class="form-label" for="userProfilePin" style="font-weight: 700; color: #1e293b;">
             รหัส PIN เข้าสู่ระบบ (4-8 หลัก) <span style="color: #ef4444;">*</span>
           </label>
@@ -1884,15 +1887,15 @@
   <!-- PDF.js for Smart Offline & Online PDF Job Request Auto-Fill -->
   <script src="pdf.min.js"></script>
   <!-- Job Requests Database (QR-PT-036-A) for Instant Auto-Fill -->
-  <script src="job_requests_db.js?v=20260909_8"></script>
   <!-- Application Logic Script -->
-  <script src="app.js?v=20261029_v36_opt"></script>
-  <script src="figma-dashboard.js?v=20261103_v75"></script>
-  <script src="figma-table.js?v=20261103_v75"></script>
-  <script src="figma-pages.js?v=20261103_v75"></script>
-  <script src="figma-profile.js?v=20261103_v75"></script>
-  <script src="figma-i18n.js?v=20261103_v75"></script>
-  <script src="figma-case.js?v=20261103_v75"></script>
+  <script src="app.js?v=20261127_auth1"></script>
+  <script src="figma-dashboard.js?v=20261103_v76"></script>
+  <script src="figma-table.js?v=20261103_v76"></script>
+  <script src="figma-pages.js?v=20261103_v76"></script>
+  <script src="figma-profile.js?v=20261103_v76"></script>
+  <script src="figma-i18n.js?v=20261103_v76"></script>
+  <script src="figma-case.js?v=20261103_v76"></script>
+  <script src="acre-auth.js?v=20261103_v76"></script>
 
   <!-- iOS Mobile Action Sheet for Card (Edit / Delete / Cancel) -->
   <div id="mobileActionSheet" class="ios-action-sheet-overlay" onclick="closeMobileActionSheet(event)">

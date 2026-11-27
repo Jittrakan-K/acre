@@ -1,0 +1,8 @@
+# private work data: imported into Firestore once, never published
+acre-private-data.json
+job_requests_db.js
+job_requests_db.json
+*.backup
+index.before-redesign.html
+ACHIEVEMENT-RECORD-WEB.zip
+_UPLOAD-TO-GITHUB/
